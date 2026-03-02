@@ -143,11 +143,9 @@ public/
 │   │   └── ...
 │   └── id/                    # Indonesian TTS (/id)
 │       └── ...
-├── asr-model/                 # ASR models (/asr)
-│   └── {model-name}/
-│       └── ...                # Model-specific files
-└── vad-model/silero-vad/      # VAD model (included)
-    └── silero_vad.onnx
+└── asr-model/                 # ASR models (/asr)
+    └── {model-name}/
+        └── ...                # Model-specific files
 ```
 
 The dev server lists and serves TTS models from `tts-model/{lang}/` and ASR models from `asr-model/` when you run `npm run dev`.
@@ -184,45 +182,67 @@ The dev server lists and serves TTS models from `tts-model/{lang}/` and ASR mode
 
 ```
 piper-tts-web-demo/
+├── nghitts.config.js            # User-facing config (defaults, models, flags)
 ├── src/
-│   ├── App.vue                 # Shell with tab bar (TTS + ASR), share/history buttons
-│   ├── router/index.js         # Routes: / (Vietnamese), /en, /id, /asr
-│   ├── views/
-│   │   ├── VietnameseView.vue  # Vietnamese TTS page
-│   │   ├── LanguageView.vue    # English/Indonesian TTS page (reusable)
-│   │   └── ASRView.vue         # Speech recognition page (mic + file upload)
-│   ├── components/
-│   │   ├── HistoryPanel.vue    # Slide-out sidebar for TTS generation history
-│   │   └── ...                 # AudioChunk, ModelSelector, SpeedControl, etc.
-│   ├── lib/
-│   │   ├── piper-tts.js        # Piper TTS (Vietnamese preprocessing)
-│   │   └── piper-tts-i18n.js   # Piper TTS for /en and /id (no Vietnamese pipeline)
-│   ├── utils/
-│   │   ├── history-store.js    # IndexedDB-backed TTS history (max 50 entries)
-│   │   ├── text-cleaner.js     # Text normalization and transliteration
-│   │   ├── vietnamese-processor.js  # Vietnamese number/date/currency/Roman numeral conversion
-│   │   └── ...                 # model-cache, model-detector, etc.
-│   ├── workers/
-│   │   ├── tts-worker.js       # Worker for Vietnamese page
-│   │   └── tts-worker-i18n.js  # Worker for English/Indonesian pages
-│   └── config.js               # TTS and ASR model URLs, defaults, and configuration
-├── functions/api/
-│   ├── models.ts               # List Vietnamese TTS models (R2 prefix piper/vi/)
-│   ├── model/[name].ts         # Serve Vietnamese TTS model files
-│   ├── piper/[lang]/models.ts  # List TTS models for a language
-│   ├── model/piper/[lang]/[name].ts  # Serve TTS model for a language
-│   ├── asr/models.ts           # List ASR models (R2 prefix asr/)
-│   └── model/asr/[model]/[name].ts   # Serve ASR model files
+│   ├── app/                     # App shell (entry, routing, layout)
+│   │   ├── main.js
+│   │   ├── App.vue
+│   │   └── router.js
+│   ├── tts/
+│   │   ├── vietnamese/          # Vietnamese TTS (home page /)
+│   │   │   ├── VietnameseView.vue
+│   │   │   ├── piper-tts.js
+│   │   │   ├── tts-worker.js
+│   │   │   ├── vietnamese-processor.js
+│   │   │   └── vietnamese-detector.js
+│   │   ├── i18n/                # English/Indonesian TTS (/en, /id)
+│   │   │   ├── LanguageView.vue
+│   │   │   ├── piper-tts-i18n.js
+│   │   │   └── tts-worker-i18n.js
+│   │   └── components/          # Shared TTS UI components
+│   │       ├── AudioChunk.vue
+│   │       ├── ModelSelector.vue
+│   │       ├── VoiceSelector.vue
+│   │       ├── SpeedControl.vue
+│   │       ├── DemoTable.vue
+│   │       └── TextStatistics.vue
+│   ├── asr/                     # ASR feature (/asr)
+│   │   └── ASRView.vue
+│   ├── shared/                  # App-wide shared code
+│   │   ├── components/
+│   │   │   ├── ThemeToggle.vue
+│   │   │   └── HistoryPanel.vue
+│   │   ├── api.js               # URL builders and API config
+│   │   ├── text-cleaner.js
+│   │   ├── text-cleaner-i18n.js
+│   │   ├── transliterator.js
+│   │   ├── model-cache.js
+│   │   ├── model-detector.js
+│   │   └── history-store.js
+│   ├── dev/
+│   │   └── api-middleware.js    # Vite dev server API middleware
+│   └── index.css
+├── functions/api/               # Cloudflare Pages Functions (unchanged)
+│   ├── models.ts
+│   ├── model/[name].ts
+│   ├── piper/[lang]/models.ts
+│   ├── model/piper/[lang]/[name].ts
+│   ├── asr/models.ts
+│   └── model/asr/[model]/[name].ts
 └── public/
-    ├── favicon.png              # Site favicon
-    ├── tts-model/vi/            # Vietnamese TTS models (local)
-    ├── tts-model/en/            # English TTS models (local)
-    ├── tts-model/id/            # Indonesian TTS models (local)
-    ├── asr-model/               # ASR models (local, for dev)
-    ├── code/asr-wasm/           # Sherpa-ONNX WASM scripts (ASR + VAD)
-    ├── vad-model/silero-vad/    # Silero VAD model (silero_vad.onnx)
-    ├── non-vietnamese-words.csv
-    └── acronyms.csv
+    ├── favicon.png
+    ├── data/                    # Static data files
+    │   ├── non-vietnamese-words.csv
+    │   └── acronyms.csv
+    ├── asr-wasm/                # ASR WASM scripts (Sherpa-ONNX)
+    │   ├── sherpa-onnx-asr.js
+    │   ├── sherpa-onnx-vad.js
+    │   └── app-vad-asr.js
+    ├── tts-model/               # User-provided TTS models
+    │   ├── vi/
+    │   ├── en/
+    │   └── id/
+    └── asr-model/               # User-provided ASR models
 ```
 
 ## How It Works
@@ -258,7 +278,7 @@ The application includes comprehensive Vietnamese text processing that handles:
 - **Decimals**: Vietnamese decimal format (comma as decimal separator)
 - **Phone Numbers**: Digit-by-digit reading
 - **Ordinals**: Conversion of ordinal numbers (thứ 2 → thứ hai)
-- **Roman Numerals**: Conversion of I–XXX to Arabic digits (configurable via `UnlimitedRomanNumerals` in `config.json`)
+- **Roman Numerals**: Conversion of I–XXX to Arabic digits (configurable via `unlimitedRomanNumerals` in `nghitts.config.js`)
 - **Ranges with Units/Currency**: Numeric ranges and fractions with units (e.g., "1-10m" → "1 đến 10 m", "1/10kg" → "1 phần 10 kg")
 
 ## Running Locally
@@ -304,7 +324,7 @@ npm install phonemizer-1.2.2.tgz
    ```
    public/asr-model/{model-name}/
    ```
-   The VAD model (`silero_vad.onnx`) is already included in `public/vad-model/silero-vad/`.
+   VAD is handled by the ASR WASM scripts in `public/asr-wasm/`.
 
 ### Step 3: Start Development Server
 
@@ -370,9 +390,15 @@ The `wrangler.toml` file configures:
 
 ### Application Configuration
 
-`src/config.json` controls runtime behavior:
+`nghitts.config.js` (project root) controls all user-facing settings:
 - `debug` – Enable/disable debug logging
-- `UnlimitedRomanNumerals` – When `false`, only Roman numerals I–XXX are converted; when `true`, all valid Roman numerals are converted
+- `enableTransliteration` – Enable/disable transliteration of non-Vietnamese words
+- `unlimitedRomanNumerals` – When `false`, only Roman numerals I–XXX are converted; when `true`, all valid Roman numerals are converted
+- `tts.defaultModel` – Default TTS model name per language
+- `asr.defaultModel` – Default ASR model name
+- `asr.fallbackModels` – Fallback ASR model list when API fails
+
+Internal URL builders and API configuration are in `src/shared/api.js`.
 
 ### TTS Model Format
 

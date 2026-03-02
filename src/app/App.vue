@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { RouterView } from 'vue-router';
-import ThemeToggle from './components/ThemeToggle.vue';
-import HistoryPanel from './components/HistoryPanel.vue';
+import ThemeToggle from '../shared/components/ThemeToggle.vue';
+import HistoryPanel from '../shared/components/HistoryPanel.vue';
 import { History } from 'lucide-vue-next';
 
 const shareCopied = ref(false);

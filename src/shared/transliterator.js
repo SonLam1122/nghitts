@@ -1,4 +1,4 @@
-import { isVietnameseWord } from './vietnamese-detector.js';
+import { isVietnameseWord } from '@/tts/vietnamese/vietnamese-detector.js';
 
 /**
  * Convert English word to Vietnamese transliteration

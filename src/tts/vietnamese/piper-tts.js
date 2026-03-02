@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { processTextForTTS, chunkText, loadConfig, isDebugEnabled, debugLog } from '../utils/text-cleaner.js';
+import { processTextForTTS, chunkText, loadConfig, isDebugEnabled, debugLog } from '@/shared/text-cleaner.js';
 
 // Merge phonemizer output (which may be an array of clause strings) into a single
 // string while preserving clause separators (commas/semicolons/colons) from the
@@ -160,7 +160,7 @@ export class PiperTTS {
     try {
       // Import ONNX Runtime Web and caching utility
       const ort = await import('onnxruntime-web');
-      const { cachedFetch } = await import('../utils/model-cache.js');
+      const { cachedFetch } = await import('@/shared/model-cache.js');
       
       // Use local files in public directory with threading enabled
       ort.env.wasm.wasmPaths = `${import.meta.env.BASE_URL}onnx-runtime/`;

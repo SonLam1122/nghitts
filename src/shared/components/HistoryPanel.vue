@@ -7,7 +7,7 @@ import {
   CopyIcon,
   Trash2Icon,
 } from 'lucide-vue-next';
-import { getEntries, deleteEntry, clearAll } from '../utils/history-store.js';
+import { getEntries, deleteEntry, clearAll } from '../history-store.js';
 
 const props = defineProps({
   open: { type: Boolean, default: false },

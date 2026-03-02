@@ -7,14 +7,14 @@ import {
   CopyIcon,
   CheckIcon,
 } from 'lucide-vue-next';
-import TextStatistics from '../components/TextStatistics.vue';
-import SpeedControl from '../components/SpeedControl.vue';
-import AudioChunk from '../components/AudioChunk.vue';
-import ModelSelector from '../components/ModelSelector.vue';
-import DemoTable from '../components/DemoTable.vue';
-import { fetchAvailableModels } from '../utils/model-detector.js';
-import { addEntry } from '../utils/history-store.js';
-import { DEFAULT_MODEL } from '../config.js';
+import TextStatistics from '@/tts/components/TextStatistics.vue';
+import SpeedControl from '@/tts/components/SpeedControl.vue';
+import AudioChunk from '@/tts/components/AudioChunk.vue';
+import ModelSelector from '@/tts/components/ModelSelector.vue';
+import DemoTable from '@/tts/components/DemoTable.vue';
+import { fetchAvailableModels } from '@/shared/model-detector.js';
+import { addEntry } from '@/shared/history-store.js';
+import { DEFAULT_MODEL } from '@/shared/api.js';
 
 // State variables
 const text = ref(
@@ -73,7 +73,7 @@ const restartWorker = (modelName = null) => {
     }
   }, 200);
 
-  worker.value = new Worker(new URL("../workers/tts-worker.js", import.meta.url), {
+  worker.value = new Worker(new URL("./tts-worker.js", import.meta.url), {
     type: "module",
   });
 

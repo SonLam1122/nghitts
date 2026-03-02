@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { MicIcon, SquareIcon, Trash2Icon, UploadIcon, DownloadIcon } from 'lucide-vue-next';
-import { getASRAssetUrl, ASR_CODE_BASE, getASRModelsListUrl, DEFAULT_ASR_MODEL, ASR_MODELS_FALLBACK, ASR_MODEL_STORAGE_KEY } from '../config.js';
+import { getASRAssetUrl, ASR_CODE_BASE, getASRModelsListUrl, DEFAULT_ASR_MODEL, ASR_MODELS_FALLBACK, ASR_MODEL_STORAGE_KEY } from '@/shared/api.js';
 
-/** Shared scripts (same for all models) from code/asr-wasm. Model-specific main .js loaded separately. */
+/** Shared scripts (same for all models) from asr-wasm. Model-specific main .js loaded separately. */
 const sharedScriptUrls = [
   `${ASR_CODE_BASE}sherpa-onnx-asr.js`,
   `${ASR_CODE_BASE}sherpa-onnx-vad.js`,
@@ -148,7 +148,7 @@ onMounted(async () => {
   } catch (e) {
     console.error('ASR WASM load error:', e);
     const statusEl = document.getElementById('status');
-    if (statusEl) statusEl.textContent = 'Failed to load ASR. Ensure shared scripts are in public/code/asr-wasm/ and model .wasm/.data in public/asr-model/<model>/ (or R2 asr/<model>/).';
+    if (statusEl) statusEl.textContent = 'Failed to load ASR. Ensure shared scripts are in public/asr-wasm/ and model .wasm/.data in public/asr-model/<model>/ (or R2 asr/<model>/).';
   }
 });
 

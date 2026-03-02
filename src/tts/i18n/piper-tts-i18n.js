@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { cleanTextForTTS, chunkText } from '../utils/text-cleaner-i18n.js';
+import { cleanTextForTTS, chunkText } from '@/shared/text-cleaner-i18n.js';
 
 // Text splitting stream to break text into chunks
 export class TextSplitterStream {
@@ -94,7 +94,7 @@ export class PiperTTS {
   static async from_pretrained(modelPath, configPath) {
     try {
       const ort = await import('onnxruntime-web');
-      const { cachedFetch } = await import('../utils/model-cache.js');
+      const { cachedFetch } = await import('@/shared/model-cache.js');
 
       ort.env.wasm.wasmPaths = `${import.meta.env.BASE_URL}onnx-runtime/`;
 

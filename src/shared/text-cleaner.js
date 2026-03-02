@@ -1,6 +1,6 @@
-import { processVietnameseText } from './vietnamese-processor.js';
+import { processVietnameseText } from '@/tts/vietnamese/vietnamese-processor.js';
 import { transliterateWord } from './transliterator.js';
-import { isVietnameseWord } from './vietnamese-detector.js';
+import { isVietnameseWord } from '@/tts/vietnamese/vietnamese-detector.js';
 
 /** Words to skip in step 4.5 transliteration (e.g. MC = Master of Ceremonies, kept as-is). Case-insensitive. */
 const TRANSLITERATION_SKIP_WORDS = new Set(['mc']);
@@ -18,7 +18,7 @@ let configCache = null;
  */
 async function loadWordReplacementMap() {
     try {
-        const response = await fetch('/non-vietnamese-words.csv');
+        const response = await fetch('/data/non-vietnamese-words.csv');
         if (!response.ok) {
             console.warn('Failed to load word replacement CSV:', response.statusText);
             return new Map();
@@ -67,7 +67,7 @@ async function loadAcronymMap() {
     }
 
     try {
-        const response = await fetch('/acronyms.csv');
+        const response = await fetch('/data/acronyms.csv');
         if (!response.ok) {
             console.warn('Failed to load acronym CSV:', response.statusText);
             acronymMapCache = new Map();
@@ -120,7 +120,7 @@ export async function loadConfig() {
 
     try {
         // Import config as a module (since it's in src/ folder, it will be bundled)
-        const configModule = await import('../config.json');
+        const configModule = await import('../../nghitts.config.js');
         configCache = configModule.default || configModule;
         return configCache;
     } catch (error) {
