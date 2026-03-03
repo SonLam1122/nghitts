@@ -269,6 +269,108 @@ export function devApiMiddleware() {
           return;
         }
 
+        // Handle /api/demo/list - list demo voice samples from public/demo/
+        if (url === "/demo/list" || url === "/demo/list/") {
+          try {
+            const demoDir = path.join(__dirname, "public", "demo");
+            if (!fs.existsSync(demoDir)) {
+              res.writeHead(200, {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              });
+              res.end(JSON.stringify({ demos: [] }));
+              return;
+            }
+            const files = fs.readdirSync(demoDir);
+            const demos = files
+              .filter((f) => f.endsWith(".wav"))
+              .map((f) => {
+                const speaker = f.replace(/\.wav$/, "");
+                const wavPath = path.join(demoDir, f);
+                const stats = fs.statSync(wavPath);
+                return {
+                  speaker,
+                  size: stats.size,
+                  uploaded: stats.mtime.toISOString(),
+                };
+              })
+              .sort((a, b) => a.speaker.localeCompare(b.speaker, "vi"));
+            res.writeHead(200, {
+              "Content-Type": "application/json; charset=utf-8",
+              "Access-Control-Allow-Origin": "*",
+            });
+            res.end(JSON.stringify({ demos }));
+          } catch (err) {
+            console.error("Error listing demos:", err);
+            res.writeHead(500, {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            });
+            res.end(
+              JSON.stringify({
+                error: "Failed to list demos",
+                message: err.message,
+              })
+            );
+          }
+          return;
+        }
+
+        // Handle /api/demo/file/{name} - serve demo file from public/demo/
+        const demoFileMatch = url.match(/^\/demo\/file\/(.+)$/);
+        if (demoFileMatch) {
+          try {
+            const fileName = decodeURIComponent(demoFileMatch[1]);
+            const demoDir = path.join(__dirname, "public", "demo");
+            const filePath = path.join(demoDir, fileName);
+            const resolvedPath = path.resolve(filePath);
+            const resolvedDir = path.resolve(demoDir);
+            if (!resolvedPath.startsWith(resolvedDir)) {
+              res.writeHead(403, {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              });
+              res.end(JSON.stringify({ error: "Access denied" }));
+              return;
+            }
+            if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+              res.writeHead(404, {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              });
+              res.end(JSON.stringify({ error: "Demo file not found" }));
+              return;
+            }
+            let contentType = "application/octet-stream";
+            if (fileName.endsWith(".wav")) contentType = "audio/wav";
+            else if (fileName.endsWith(".mp3")) contentType = "audio/mpeg";
+            else if (fileName.endsWith(".txt"))
+              contentType = "text/plain; charset=utf-8";
+            const fileStats = fs.statSync(filePath);
+            const fileContent = fs.readFileSync(filePath);
+            res.writeHead(200, {
+              "Content-Type": contentType,
+              "Content-Length": fileStats.size.toString(),
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=86400",
+            });
+            res.end(fileContent);
+          } catch (error) {
+            console.error("Error serving demo file:", error);
+            res.writeHead(500, {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            });
+            res.end(
+              JSON.stringify({
+                error: "Failed to serve demo file",
+                message: error.message,
+              })
+            );
+          }
+          return;
+        }
+
         next();
       });
 
