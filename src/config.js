@@ -5,10 +5,7 @@
  */
 
 export function getModelBaseUrl(lang) {
-  if (import.meta.env.PROD) {
-    return `/api/model/piper/${lang}/`;
-  }
-  return `${import.meta.env.BASE_URL}tts-model/${lang}/`;
+  return `/api/model/piper/${lang}/`;
 }
 
 /**
